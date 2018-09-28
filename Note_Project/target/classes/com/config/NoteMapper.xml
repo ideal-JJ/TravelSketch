@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dept">
+	
+	<select id="selectAll" resultType="com.dto.Note">
+		select 
+		    nt.nt_idx AS ntIdx, um.um_id AS userId, nt.nt_title AS ntTitle, nt.nt_date AS ntDate,
+		    ch.CH_IDX AS chIdx, ch.CH_INCREASE AS chIncrease, ch.CH_TITLE AS chTitle, ch.CH_TRAVELDATE AS chTravelDate
+		from UserMember um
+		inner join Note nt on um.um_id = nt.NT_UM_ID
+		inner join Chapter ch on nt.NT_IDX = ch.CH_NT_IDX
+	</select>
+	
+	<insert id="insert" parameterType="com.dto.Note">
+		insert into dept (deptno, dname, loc) 
+		values ( #{deptno}, #{dname}, #{loc} )
+	</insert>
+	
+	<update id="update" parameterType="com.dto.Note">
+		update dept
+		set dname= #{dname}, loc = #{loc}
+		where deptno = #{deptno}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		delete from dept
+		where deptno = #{deptno}
+	</delete>
+   
+</mapper>
+
+
+
+
+
+
+
+
+
+
