@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	
+	<!-- 1. jdbc.properties 등록 -->
+	<context:property-placeholder location="classpath:com/config/jdbc.properties" />
+
+	<!-- 2. db연동 소스 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${jdbc.driver}"></property>
+		<property name="url" value="${jdbc.url}"></property>
+		<property name="username" value="${jdbc.username}"></property>
+		<property name="password" value="${jdbc.xxx}"></property>
+	</bean>
+	
+	<!-- transaction 처리 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- bean id 값 이름을 앞에 transaction 이라고 붙이면  tx 태그의 transaction-manager="txManager" 속성을 삭제해도 된다 -->
+	<!-- <tx:annotation-driven transaction-manager="transactionManager"/> -->
+	<!-- 삭제한 결과 -->
+	<tx:annotation-driven/>
+	
+	<!-- 3. SqlSession 등록 -->
+	<bean id="factoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="mapperLocations">
+			<list>
+				<value>classpath:com/config/MemberMapper.xml</value>
+				<value>classpath:com/config/GoodsMapper.xml</value>
+				<value>classpath:com/config/CartMapper.xml</value>
+				<value>classpath:com/config/OrderMapper.xml</value>
+			</list>
+		</property>
+		<!-- alias 를 등록하겠따 -->
+		<property name="typeAliases">
+			<list>
+				<value>com.dto.Member</value>
+				<value>com.dto.Login</value>
+				<value>com.dto.Goods</value>
+				<value>com.dto.Cart</value>
+				<value>com.dto.Order</value>
+			</list>
+		</property>
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<bean id="sessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="factoryBean"/>
+	</bean>
+</beans>
+
+
+
+
+
+
+
+
