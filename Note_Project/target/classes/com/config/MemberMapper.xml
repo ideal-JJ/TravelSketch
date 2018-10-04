@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MemberMapper">
+
+
+	<!-- parameterType="Member" 인것은 Merber DTO 에서 Alias 를 적용하였게 때문이다 -->
+	<select id="login" resultType="Member" parameterType="Login">
+		select
+			UM_ID as uuid,
+			UM_LOGINID as userid,
+			UM_PASSWD as passwd,
+			UM_NAME as name,
+			UM_EMAIL as email,
+			UM_TEL as tel,
+			UM_DATE as joinDate,
+			UM_PHOTO as photo,
+			UM_PHOTO_BG as photoBg,
+			UM_SNS as joinState
+		from UserMember
+		where UM_LOGINID=#{userid} and UM_PASSWD=#{passwd}
+
+	</select>
+
+
+
+</mapper>
