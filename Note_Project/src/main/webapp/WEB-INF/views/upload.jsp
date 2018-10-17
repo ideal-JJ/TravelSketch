@@ -14,21 +14,6 @@
 </head>
 <body>
 	<jsp:include page="common/top.jsp" flush="true"/>
-	<jsp:include page="note/note.jsp" flush="true"/>	
+	<jsp:include page="note/uploadForm.jsp" flush="true"/>
 </body>
 </html>
-
-
-
-
-<%--
-${nt.getIdx()}<br>
-${nt.getUserId()}<br>
-${nt.getTitle()}<br>
-${nt.getDate()}<br>
-
-${nt.getChapter().getIdx()}<br>
-${nt.getChapter().getTitle()}<br>
-${nt.getChapter().getTravelDate()}<br>
-${nt.getPicture().getImg()} 
---%>

@@ -41,6 +41,9 @@
 				<value>com.dto.Member</value>
 				<value>com.dto.Login</value>
 				<value>com.dto.Note</value>
+				<value>com.dto.Chapter</value>
+				<value>com.dto.FineLike</value>
+				<value>com.dto.Reply</value>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>

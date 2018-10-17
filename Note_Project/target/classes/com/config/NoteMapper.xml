@@ -21,13 +21,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!-- note page 범위에 따른 note idx 값 가져오기 -->
 	<select id="selectNotePageRange" parameterType="hashmap" resultType="integer">
-		SELECT NT_IDX
+		SELECT A.NT_IDX
 		FROM (
-		        SELECT NT_IDX, ROWNUM rn
+		    SELECT NT_IDX, ROWNUM rn
+		    FROM (
+		        SELECT *
 		        FROM Note
-		        order by nt_idx
-		)
-		WHERE rn BETWEEN #{f_range} AND #{l_range}
+		        order by nt_idx DESC
+		    ) 
+		) A
+		WHERE A.rn BETWEEN #{f_range} AND #{l_range}
 	</select>
 	
 	<!-- 위 selectNotePageRange 결과인 note idx 를 조건으로 reply 개수 가져오기 -->
@@ -57,28 +60,88 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<select id="selectNoteAll" parameterType="arraylist" resultType="Note">
-		SELECT
-		nt.nt_idx AS ntIdx, ch.CH_IDX AS chIdx, 
-		um.UM_NAME AS userName, um.UM_PHOTO AS uPhoto, um.um_id AS uuId, 
-		nt.nt_title AS ntTitle, nt.nt_date AS ntDate,
-		ch.CH_TITLE AS chTitle, ch.CH_TRAVELDATE AS chTravelDate,
-		pct.pct_imgs AS pctImgs
-		FROM UserMember um
-		INNER JOIN Note nt on um.um_id = nt.NT_UM_ID
-		INNER JOIN Chapter ch on nt.NT_IDX = ch.CH_NT_IDX
-		INNER JOIN Picture pct on nt.NT_IDX = pct.pct_NT_IDX and ch.CH_IDX = pct.PCT_CH_IDX
-		where nt.NT_IDX in
-		<foreach item="item" index="index" collection="list" open="("
-			separator="," close=")">
-			#{item}
-		</foreach>
-		order by ntidx, chIdx
+		SELECT A.*, NVL(LK.lkCnt, 0) AS lkCnt, NVL(RPY.rpyCnt, 0) AS rpyCnt
+		FROM (
+		    SELECT
+		    nt.nt_idx AS ntIdx, ch.CH_IDX AS chIdx, 
+		    um.UM_NAME AS userName, um.UM_PHOTO AS uPhoto, um.um_id AS uuId, 
+		    nt.nt_title AS ntTitle, nt.nt_date AS ntDate,
+		    ch.CH_TITLE AS chTitle, ch.CH_TRAVELDATE AS chTravelDate,
+		    pct.pct_imgs AS pctImgs
+		    FROM UserMember um
+		    INNER JOIN Note nt on um.um_id = nt.NT_UM_ID
+		    INNER JOIN Chapter ch on nt.NT_IDX = ch.CH_NT_IDX
+		    INNER JOIN Picture pct on nt.NT_IDX = pct.pct_NT_IDX and ch.CH_IDX = pct.PCT_CH_IDX
+		    where nt.NT_IDX in
+		    <foreach item="item" index="index" collection="list" open="("
+				separator="," close=")">
+				#{item}
+			</foreach>
+					) A 
+			LEFT JOIN (
+			    select fl_NT_IDX, count(*) as lkCnt
+			    from finelike
+			    group by fl_NT_IDX
+			    order by fl_NT_IDX
+			) LK ON A.NTIDX = LK.fl_NT_IDX
+			LEFT JOIN (
+			    select RP_NT_IDX, count(*) as rpyCnt
+			    from reply
+			    group by RP_NT_IDX
+			    order by RP_NT_IDX
+			) RPY ON A.NTIDX = RPY.RP_NT_IDX
+			order by A.ntidx desc, A.chIdx asc
 	</select>
 	
-	<insert id="insert" parameterType="Note">
-		insert into dept (deptno, dname, loc) 
-		values ( #{deptno}, #{dname}, #{loc} )
+	
+	
+	<!-- note에 관한 chapter 정보 가져오기 -->
+	<select id="chapterList" parameterType="int" resultType="Chapter">
+		select  ch_idx as chIdx, ch_nt_idx as ch_ntIdx, ch_title as chTitle, 
+        ch_content as chContent, ch_mapinfo as chMapInfo, CH_TRAVELDATE as chTravelDate,
+        pic.PCT_IMGS as chImgs
+		from chapter ch
+		inner join PICTURE pic on ch.CH_IDX = pic.PCT_CH_IDX
+		where CH_NT_IDX = #{noteIdx}
+		order by ch_idx
+	</select>
+	
+	<!-- 좋아요 - note에 관한 좋아요 정보 -->
+	<select id="likeOfNote" parameterType="int" resultType="FineLike">
+		select fl.FL_UM_ID as uuid, um.um_photo as uPhoto
+		from finelike fl
+		INNER JOIN usermember um ON um.um_id = fl.fl_um_id
+		where fl_NT_IDX = #{noteIdx}
+		order by fl_NT_IDX
+	</select>
+	
+	<!-- 댓글 - note에 관한 댓글 정보 -->
+	<select id="replyOfNote" parameterType="int" resultType="Reply">
+		select  rp.RP_UM_ID as uuid, rp.rp_reply as reply, rp.rp_date as rpDate, 
+        um.UM_NAME as uName, um.um_photo as uPhoto
+		from reply rp
+		INNER JOIN usermember um ON um.um_id = rp.RP_UM_ID
+		where RP_NT_IDX = #{noteIdx}
+		order by RP_NT_IDX
+	</select>
+
+	<!-- 유저가 좋아요 눌렀을 때 데이터 있는지 판별 -->
+	<select id="selectUserLikeCount" parameterType="hashmap" resultType="int">
+		select count(*)
+		from FINELIKE fl
+		inner join USERMEMBER um on um.UM_ID = fl.FL_UM_ID
+		where um.UM_ID = #{uuid} and fl.FL_NT_IDX = #{noteIdx}
+	</select>
+	<!-- 카운터가 없으면 insert 한다 --> 
+	<insert id="insertLike" parameterType="hashmap">
+		INSERT into FINELIKE values (#{noteIdx}, #{uuid})
 	</insert>
+	<!-- 카운터가 있으면 delete 한다 -->
+	<delete id="deleteLike" parameterType="hashmap">
+		delete from FINELIKE where fl_nt_idx = #{noteIdx} and fl_um_id = #{uuid}
+	</delete>
+	
+	
 	
 	<update id="update" parameterType="Note">
 		update dept
@@ -86,10 +149,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where deptno = #{deptno}
 	</update>
 	
-	<delete id="delete" parameterType="int">
-		delete from dept
-		where deptno = #{deptno}
-	</delete>
+	
    
 </mapper>
 

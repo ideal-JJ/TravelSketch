@@ -14,7 +14,7 @@
 </head>
 <body>
 	<jsp:include page="common/top.jsp" flush="true"/>
-	<jsp:include page="note/note.jsp" flush="true"/>	
+	<jsp:include page="note/chapter.jsp" flush="true"/>	
 </body>
 </html>
 

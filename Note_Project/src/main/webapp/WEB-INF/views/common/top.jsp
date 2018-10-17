@@ -44,11 +44,8 @@
 
 	<div class="collapse navbar-collapse" id="navbarColor01">
 		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active"><a class="nav-link" href="#">Home<span
-					class="sr-only">(current)</span></a></li>
-			<li class="nav-item"><a class="nav-link" href="#">Features</a></li>
-			<li class="nav-item"><a class="nav-link" href="#">Pricing</a></li>
-			<li class="nav-item"><a class="nav-link" href="#">About</a></li>
+			<li class="nav-item active"><a class="nav-link" href="#">이야기<span class="sr-only">(current)</span></a></li>
+			<li class="nav-item"><a class="nav-link" href="#">노트작성</a></li>
 		</ul>
 		<c:if test="${empty login}">
 			<button id="login" class="btn btn-danger">로그인</button>&nbsp;
