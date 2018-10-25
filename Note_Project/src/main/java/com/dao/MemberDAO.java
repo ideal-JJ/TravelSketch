@@ -4,6 +4,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.dto.Chart;
 import com.dto.Login;
 import com.dto.Member;
 
@@ -17,5 +18,10 @@ public class MemberDAO {
 		System.out.println("user id : " + x.getUserid()); 
 		Member m = template.selectOne("MemberMapper.login", x);
 		return m;
+	}
+	
+	public Chart chartSelect() {
+		Chart chart = template.selectOne("chartSelect");
+		return chart;
 	}
 }

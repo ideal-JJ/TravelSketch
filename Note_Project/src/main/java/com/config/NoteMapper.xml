@@ -3,22 +3,6 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="NoteMapper">
-	
-	<!-- 
-	private int ntIdx;
-	private int uuId;
-	private String ntTitle;
-	private Date ntDate;
-	
-	private int chIdx;
-	private String chTitle;
-	private Date chTravelDate;
-	
-	private String img;
-	private int replyCnt;
-	private int likeCnt; 
-	-->
-	
 	<!-- note page 범위에 따른 note idx 값 가져오기 -->
 	<select id="selectNotePageRange" parameterType="hashmap" resultType="integer">
 		SELECT A.NT_IDX
@@ -140,6 +124,70 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<delete id="deleteLike" parameterType="hashmap">
 		delete from FINELIKE where fl_nt_idx = #{noteIdx} and fl_um_id = #{uuid}
 	</delete>
+	
+	
+	
+	
+	
+	<!-- 챕터까지 추가한 데이터를 토대로  note 테이블 먼저 insert -->
+	<insert id="insertAddNote" parameterType="InsertNote">
+		INSERT INTO NOTE(NT_IDX,NT_UM_ID,NT_TITLE,NT_DATE) VALUES( nt_note_seq.NEXTVAL, #{uuId}, #{ntTitle}, SYSDATE)
+	</insert>
+	
+	<select id="maxNoteIdx" resultType="int">
+		select max(nt_idx) as ntIdx from note
+	</select>
+	<!-- 
+	private int chIdx;
+	private int chIncrease;
+	private String chTitle;
+	private String chContent;
+	private String chMapInfo;
+	private Date chTravelDate;
+	private String chImgs;
+	 -->
+	 
+	<!-- 챕터까지 추가한 데이터를 토대로  chapter insert -->
+	<insert id="insertAddChapter" parameterType="arraylist">
+		<foreach collection="list" item="item" index="index" open="INSERT ALL " separator=" " close="SELECT * FROM DUAL" > 
+		into CHAPTER (
+			CH_IDX,
+			CH_NT_IDX,
+			CH_INCREASE,
+			CH_TITLE,
+			CH_CONTENT,
+			CH_MAPINFO,
+			CH_TRAVELDATE
+		) VALUES (
+			chapterSeq(),
+			#{item.chNtIdx},
+			#{item.chIncrease},
+			#{item.chTitle},
+			#{item.chContent},
+			#{item.chMapInfo},
+			#{item.chTravelDate}
+		)
+        </foreach>
+	</insert>
+	
+	<select id="ChapterCurrentAddIdxList" parameterType="int" resultType="ChapterIdx">
+		select ch_idx as chIdx from chapter where ch_nt_idx = #{noteIdx}
+	</select>
+	
+	<!-- 챕터까지 추가한 데이터를 토대로  Picture insert -->
+	<insert id="insertAddPicture" parameterType="arraylist">
+		<foreach collection="list" item="item" index="index" open="INSERT ALL " separator=" " close="SELECT * FROM DUAL" > 
+		INTO PICTURE (
+			PCT_NT_IDX,
+			PCT_CH_IDX,
+			PCT_IMGS
+		) VALUES (
+			#{item.ntIdx},
+			#{item.chIdx},
+			#{item.img}
+		)
+		</foreach>
+	</insert>
 	
 	
 	

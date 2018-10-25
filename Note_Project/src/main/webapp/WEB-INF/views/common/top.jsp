@@ -17,6 +17,12 @@
 			//$("form").attr("action","loginCheck/goodsCart");
 			myModal.show();
 		});
+		
+		$("#logout").on("click", function() {
+			location.href="logout";
+		});
+		
+		
 
 		// 모달 창 안에 있는 확인
 		$("#confirm_button").click(function() {
@@ -25,10 +31,6 @@
 		
 		$("#MyPage").on("click", function() {
 			$("form").attr("action","loginCheck/myPage");
-		});
-		
-		$("#logout").on("click", function() {
-			$("form").attr("action","loginCheck/logout");
 		});
 
 	});
@@ -43,18 +45,43 @@
 	</button>
 
 	<div class="collapse navbar-collapse" id="navbarColor01">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active"><a class="nav-link" href="#">이야기<span class="sr-only">(current)</span></a></li>
-			<li class="nav-item"><a class="nav-link" href="#">노트작성</a></li>
-		</ul>
+		
+		<c:choose>
+		    <c:when test="${login.getUserid() eq 'admin'}">
+		    	<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<!-- <a class="nav-link" href="chart">차트<span class="sr-only">(current)</span></a> -->
+						<a class="nav-link" href='javascript:void(0);' onclick="clickChart();">차트<span class="sr-only">(current)</span></a>
+					</li>
+				</ul>
+		    </c:when>
+		    <c:otherwise>
+		    	<ul class="navbar-nav mr-auto">
+					<li class="nav-item active">
+						<a class="nav-link" href="note">이야기<span class="sr-only">(current)</span></a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="noteUpload">노트작성</a>
+					</li>
+				</ul>
+		    </c:otherwise>
+	    </c:choose>
+		
+		
 		<c:if test="${empty login}">
-			<button id="login" class="btn btn-danger">로그인</button>&nbsp;
-			<button id="join" class="btn btn-secondary">회원가입</button>
+			<button id="login" class="btn btn-danger">로그인</button>
 		</c:if>
 		<c:if test="${!empty login}">
-			${login.name}님!&nbsp;
-			<button id="MyPage" class="btn btn-info">MyPage</button>&nbsp;
-			<button id="logout" class="btn btn-danger">로그아웃</button>
+			<c:choose>
+			    <c:when test="${login.getUserid() eq 'admin'}">
+			    	안녕하세요 ${login.name} 관리자님!&nbsp;&nbsp;
+					<button id="logout" class="btn btn-danger">관리자 로그아웃</button>
+			    </c:when>
+			    <c:otherwise>
+			    	안녕하세요 ${login.name}님&nbsp;&nbsp;
+					<button id="logout" class="btn btn-danger">로그아웃</button>
+			    </c:otherwise>
+		    </c:choose>
 		</c:if>
 	</div>
 </nav>

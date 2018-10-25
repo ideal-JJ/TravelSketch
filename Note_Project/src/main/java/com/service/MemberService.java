@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dao.MemberDAO;
+import com.dto.Chart;
 import com.dto.Login;
 import com.dto.Member;
 
@@ -15,5 +16,9 @@ public class MemberService {
 	
 	public Member login(Login x) {
 		return mDao.login(x);
+	}
+	
+	public Chart chartSelect() {
+		return mDao.chartSelect();
 	}
 }

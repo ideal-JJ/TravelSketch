@@ -48,6 +48,12 @@
 	<mvc:resources location="/WEB-INF/views/js/" mapping="/js/**/"></mvc:resources>
 	<mvc:resources location="/WEB-INF/views/css/" mapping="/css/**/"></mvc:resources>
 	
+	<!-- 절대경로는 이렇게 해주면 된다 -->
+	<mvc:resources location="file:///c:/upload/" mapping="/upload/**/"></mvc:resources>
+	
+	<!-- 특정 url 경로는 이렇게 지정하면 된다  -->
+	<mvc:resources location="http://wo01-ws6491.ktics.co.kr/" mapping="/url/**/"></mvc:resources>
+	
 	<!--  JSP 전담 ViewResolver -->
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/views/"></property>

@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.dao.NoteDAO;
 import com.dto.Chapter;
+import com.dto.ChapterIdx;
 import com.dto.FineLike;
+import com.dto.InsertNote;
+import com.dto.InsertPicture;
 import com.dto.Note;
 import com.dto.Reply;
 
@@ -50,4 +53,30 @@ public class NoteService {
 	public int deleteLike(HashMap<String, Integer> map) {
 		return dao.deleteLike(map);
 	}
+	
+	
+	
+	
+	
+	public int insertAddNote(InsertNote note) {
+		return dao.insertAddNote(note);
+	}
+	
+	public int maxNoteIdx() {
+		return dao.maxNoteIdx();
+	}
+	
+	public int insertAddChapter(ArrayList<Chapter> chapterList) {
+		return dao.insertAddChapter(chapterList);
+	}
+	
+	public List<ChapterIdx> ChapterCurrentAddIdxList(int noteIdx) {
+		return dao.ChapterCurrentAddIdxList(noteIdx);
+	}
+	
+	public int insertAddPicture(ArrayList<InsertPicture> picList) {
+		return dao.insertAddPicture(picList);
+	}
+	
+	
 }

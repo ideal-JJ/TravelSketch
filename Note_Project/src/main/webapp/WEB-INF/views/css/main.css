@@ -2,16 +2,32 @@
  * Grid container
  */
 #main {
-	margin-top: 9em;
 }
+
+#imgWrap {
+	margin: 0 auto;
+    width: 871px;
+    padding: 0;
+}
+
+#imgWrap img {
+	width: 860px;
+    margin: 0 auto;
+    text-align: center;
+}
+
 #tiles {
-  list-style-type: none;
-  position: relative; /** Needed to ensure items are laid out relative to this container **/
-  margin: 0;
-  padding: 0;
+    list-style-type: none;
+    position: relative;
+    
+    padding: 0;
+    width: 871px;
+    overflow: hidden;
+    margin: 0 auto;
 }
 #tiles li:hover img{
 	opacity:0.8;
+	
 }
 /**
  * Grid items
@@ -19,7 +35,7 @@
 #tiles li {
 	display:inline;
 	float: left;
-	margin: 0 0 0 0;
+	margin-right: 10px;
     padding: 0 0 0 0;
  	width: 280px;
 	background-color: #ffffff;

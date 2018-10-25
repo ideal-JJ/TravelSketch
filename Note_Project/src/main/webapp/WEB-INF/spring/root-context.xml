@@ -44,6 +44,11 @@
 				<value>com.dto.Chapter</value>
 				<value>com.dto.FineLike</value>
 				<value>com.dto.Reply</value>
+				<value>com.dto.InsertNote</value>
+				<value>com.dto.InsertChapter</value>
+				<value>com.dto.InsertPicture</value>
+				<value>com.dto.ChapterIdx</value>
+				<value>com.dto.Chart</value>
 			</list>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>

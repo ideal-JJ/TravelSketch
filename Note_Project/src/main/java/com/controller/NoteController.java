@@ -1,10 +1,12 @@
 package com.controller;
 
 import java.io.File;
-import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-//import java.util.Date;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -12,23 +14,26 @@ import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 //import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.dto.Chapter;
+import com.dto.ChapterIdx;
 import com.dto.FineLike;
+import com.dto.InsertChapter;
+import com.dto.InsertNote;
+import com.dto.InsertPicture;
 import com.dto.Member;
 import com.dto.Note;
 import com.dto.Reply;
-import com.dto.Upload;
 import com.service.LikeService;
 //import com.dto.Note;
 import com.service.NoteService;
@@ -37,10 +42,7 @@ import com.service.ReplyService;
 @Controller
 public class NoteController {
 	
-//	private static final int RESULT_EXCEED_SIZE = -2;
-//    private static final int RESULT_UNACCEPTED_EXTENSION = -1;
-//    private static final int RESULT_SUCCESS = 1;
-//    private static final long LIMIT_SIZE = 10 * 1024 * 1024;
+	private final String URL_PATH = "http://wo01-ws6491.ktics.co.kr/";
 	
 	@Autowired
 	NoteService nService;
@@ -50,99 +52,53 @@ public class NoteController {
 	
 	@Autowired
 	LikeService lkService;
+	
+	ArrayList<Chapter> addChapterList = new ArrayList<>();
+	ArrayList<InsertPicture> addPictureList = new ArrayList<>();
 
-	@RequestMapping("/test")
+	@RequestMapping("/")
 	public String home(RedirectAttributes flash) {
 		
-		HashMap<String, Integer> map = new HashMap<>();
-		List<HashMap<Integer, Integer>> replyList = new ArrayList();
-		List<HashMap<Integer, Integer>> likeList = new ArrayList();
+		System.out.println("home !!!");
+		if (addChapterList.size() != 0)
+			addChapterList.removeAll(addChapterList);
 		
+		if (addPictureList.size() != 0)
+			addPictureList.removeAll(addPictureList);
+		
+		HashMap<String, Integer> map = new HashMap<>();
 		map.put("f_range", 1);
 		map.put("l_range", 5);
 		
 		List<Integer> rangeList = nService.selectNotePageRange(map);
-		System.out.println("rangeList : " + rangeList);
 
-//		replyList = rService.selectNotePageRangePerReply((ArrayList<Integer>) rangeList);
-//		System.out.println("replyList == " + replyList);
-//		
-//		likeList = lkService.selectNotePageRangePerLike((ArrayList<Integer>) rangeList);
-//		System.out.println("likeList === " + likeList);
-		
 		List<Note> noteList = nService.selectNoteAll((ArrayList<Integer>) rangeList);
+
 		
-		/*for (int range : rangeList) {
-			System.out.println("range : " + range);
-			
-			for (Note note : noteList) {
-				
-				if (range == note.getNtIdx()) {
-					
-					UniteNote uNote = new UniteNote(
-						note.getNtIdx(), 
-						note.getUuId(), 
-						note.getUserName(),
-						note.getuPhoto(),
-						note.getNtTitle(),
-						note.getNtDate(),
-						note.getChIdx(),
-						note.getChTitle(),
-						note.getChTravelDate(),
-						note.getPctImgs()
-					);
-				}
-			}
-		}*/
+		flash.addFlashAttribute("noteList", noteList);
 		
+		return "redirect:/note";
+	}
+	
+	@RequestMapping("/note")
+	public String note(RedirectAttributes flash) {
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		if (addChapterList.size() != 0)
+			addChapterList.removeAll(addChapterList);
 		
-		/*int beforeIdx = 0;
+		if (addPictureList.size() != 0)
+			addPictureList.removeAll(addPictureList);
 		
-		for (Note note : noteList) {
-			if (beforeIdx != note.getNtIdx()) {
-				beforeIdx = note.getNtIdx();
-				
-				UniteNote uNote = new UniteNote();
-				uNote.setNtIdx(note.getNtIdx()); 
-				uNote.setUuId(note.getUuId());
-				uNote.setUserName(note.getUserName());
-				uNote.setuPhoto(note.getuPhoto());
-				uNote.setNtTitle(note.getNtTitle());
-				uNote.setNtDate(note.getNtDate());
-				uNote.setChIdx(note.getChIdx());
-				uNote.setChTitle(note.getChTitle());
-				uNote.setChTravelDate(note.getChTravelDate());
-				uNote.setPctImgs(note.getPctImgs());
-				
-			} else {
-				
-			}
-		}*/
+		HashMap<String, Integer> map = new HashMap<>();
+		map.put("f_range", 1);
+		map.put("l_range", 5);
+		
+		List<Integer> rangeList = nService.selectNotePageRange(map);
+		List<Note> noteList = nService.selectNoteAll((ArrayList<Integer>) rangeList);
 		
 		flash.addFlashAttribute("noteList", noteList);
 		
 		return "redirect:/";
-		
-//		Date date = new Date();
-		
-//		Chapter ch = new Chapter(1, 1, "이거슨", date);
-//		Picture pct = new Picture("a.jpg");
-//		Reply rp = new Reply(3);
-//		FineLike flk = new FineLike(32);
-		
-//		Note nt = new Note(1, 1042, "재밌네요", date, ch); //, pct, rp, flk);
-//		
-//		GenericXmlApplicationContext ctx = new GenericXmlApplicationContext("classpath:com/config/note.xml");
-//		NoteService service = ctx.getBean("service", NoteService.class);
-//		
-//		List<Note> list = service.selectList();
-//		
-//		for (Note dto : list) {
-//			System.out.println(dto.getNtTitle());
-//		}
-//		
-//		return "nt";
-//		
 	}
 	
 	@RequestMapping("chapterList/noteIdx/{noteIdx}")
@@ -151,6 +107,11 @@ public class NoteController {
 		int uuid = m.getUuid();
 		
 		List<Chapter> chapterList = nService.chapterList(noteIdx);
+		
+		for (Chapter chapter : chapterList) {
+			System.out.println("imgs : " + chapter.getChImgs());
+		}
+		
 		List<FineLike> likeList = nService.likeOfNote(noteIdx);
 		List<Reply> replyList = nService.replyOfNote(noteIdx);
 		
@@ -168,8 +129,6 @@ public class NoteController {
 		Member m = (Member) session.getAttribute("login");
 		System.out.println(m.getUserid() + ", " + m.getUuid());
 		int uuid = m.getUuid();
-		
-		System.out.println(">>> " + noteIdx + ", " + uuid);
 		
 		HashMap<String, Integer> map = new HashMap<>();
 		map.put("uuid", uuid);
@@ -192,75 +151,159 @@ public class NoteController {
 		return cnt;
 	}
 	
-	@RequestMapping("/upload")
-	public String home() {
+	@RequestMapping("/noteUpload")
+	public String noteUpload(Model m) {
+		if (addChapterList.size() != 0)
+			addChapterList.removeAll(addChapterList);
+		
+		if (addPictureList.size() != 0)
+			addPictureList.removeAll(addPictureList);
+		
+		m.addAttribute("uploadPage", "note");
 		return "upload";
 	}
 	
-	@RequestMapping("/noteUpload")
-	// Upload 클래스를 만들어서 저장을 한다 - Upload 값을 info.jsp에서 확인을 할 수 잇따
-	public String upload(Upload x) {
-		String theText = x.getTheText();
-		CommonsMultipartFile theFile = x.getTheFile();
+	
+	@RequestMapping("/nextChapter")
+	// 노트 제목을 폼에서 받는다
+	public String nextChapter(@RequestParam String noteTitle, HttpSession session, Model m) {
 		
-		long size = theFile.getSize();
-		String name = theFile.getName();
-		String OriFileName = theFile.getOriginalFilename();
-		String contentType = theFile.getContentType();
+		Member mb = (Member) session.getAttribute("login");
+		int uuid = mb.getUuid();
+		session.setAttribute("noteTitle", noteTitle);
 		
-		System.out.println("size : " + size);
-		System.out.println("name : " + name);
-		System.out.println("OriFileName : " + OriFileName);
-		System.out.println("contentType : " + contentType);
+		// chapter 페이지로 넘어가야 하기에 페이지 구분 값을 chapterForm 로 한다
+		m.addAttribute("uploadPage", "chapter");
+		m.addAttribute("noteTitle", noteTitle);
+		m.addAttribute("uuid", uuid);
 		
-		// 파일 저장
-		File f = new File("c:\\upload", OriFileName);
-		
-		try {
-			// 실제로 저장
-			theFile.transferTo(f);
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return "info";
+		return "upload";
 	}
 	
-	@RequestMapping(value = "requestupload2")
-    public String requestupload2(MultipartHttpServletRequest mtfRequest, HttpSession session) {
-        List<MultipartFile> fileList = mtfRequest.getFiles("file");
-        String src = mtfRequest.getParameter("src");
-        System.out.println("src value : " + src);
-
-        String path = "C:\\upload\\";
+	
+	
+	@RequestMapping(value = "/addChapter" , method=RequestMethod.POST)
+    public @ResponseBody Chapter addChapter(MultipartHttpServletRequest multi) {
+         
+		String filePath ="C:\\upload\\";
+        String newFileName = ""; // 업로드 되는 파일명
+         
+        File dir = new File(filePath);
+        if(!dir.isDirectory()){
+            dir.mkdir();
+        }
         
-        List<List<String>> groupPicList = new ArrayList<List<String>>();
-        List<String> picList = new ArrayList<String>();
-
-        for (MultipartFile mf : fileList) {
-            String originFileName = mf.getOriginalFilename(); // 원본 파일 명
-            long fileSize = mf.getSize(); // 파일 사이즈
-
-            System.out.println("originFileName : " + originFileName);
-            System.out.println("fileSize : " + fileSize);
-
-            String safeFile = path + System.currentTimeMillis() + originFileName;
-            System.out.println("safeFile : " + safeFile);
-            try {
-                mf.transferTo(new File(safeFile));
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+        String pics = "";
+//        String tempPics = "";
+        String slush = "";
+        Boolean isSlush = true;
+        
+        Iterator<String> files = multi.getFileNames();
+        while(files.hasNext()){
+            String uploadFile = files.next();
+                         
+            MultipartFile mFile = multi.getFile(uploadFile);
+            String fileName = mFile.getOriginalFilename();
+            
+            System.out.println("fileName :: " + fileName);
+            
+            if (fileName != "") {
+//	            newFileName = System.currentTimeMillis() + fileName;
+            	newFileName = fileName;
+	            if (isSlush) {
+	            	isSlush = false;
+	            } else {
+	            	slush = "|";
+	            }
+	            
+	            
+	            
+	            try {
+	                mFile.transferTo(new File(filePath + newFileName));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	            
+//	            pics += slush + URL_PATH + newFileName;
+	            pics += slush + newFileName;
+//	            tempPics += slush + newFileName;
             }
         }
-
-        return "info";
+        
+        System.out.println("pics :: " + pics);
+//        System.out.println("tempPics :: " + tempPics);
+        
+        Date newDate = null;
+        try {
+        	newDate = new SimpleDateFormat("yyyy-MM-dd").parse(multi.getParameter("travelDate"));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        
+        int increase = Integer.parseInt(multi.getParameter("increase"));
+        
+    	Chapter ch = new Chapter();
+//        ch.setChIdx(0);
+        ch.setChIncrease(increase);
+        ch.setChTitle(multi.getParameter("chtitle"));
+        ch.setChContent(multi.getParameter("content"));
+        ch.setChImgs(pics);
+        ch.setChMapInfo(multi.getParameter("mapInfo"));
+        ch.setChTravelDate(newDate);
+        
+        addChapterList.add(ch);
+        
+        
+        InsertPicture pic = new InsertPicture();
+        pic.setImg(pics);		// img가 없으면 없는대로 넣는다
+        
+        addPictureList.add(pic);
+        
+        
+        return ch;
     }
+	
+	@RequestMapping(value = "/saveNote" , method=RequestMethod.POST)
+	public String saveNnote(HttpSession session) {
+		
+		Member mb = (Member) session.getAttribute("login");
+		int uuid = mb.getUuid();
+		
+		String noteTitle = (String) session.getAttribute("noteTitle");
+		
+		InsertNote addNote = new InsertNote(uuid, noteTitle);
 
-
+		// note insert
+		nService.insertAddNote(addNote);
+		
+		// 현재 note max 값 가져오기
+		int noteIdx = nService.maxNoteIdx();
+		
+		for (Chapter chapter : addChapterList) {
+			chapter.setChNtIdx(noteIdx);
+		}
+		
+		int temp = nService.insertAddChapter(addChapterList);
+		
+		// 현재 추가한 chapter idx list 값 가져오기
+		List<ChapterIdx> chIdxList = nService.ChapterCurrentAddIdxList(noteIdx);
+		
+		// picture에 데이터 저장
+		for (int i = 0; i < addPictureList.size(); i++) {
+			addPictureList.get(i).setNtIdx(noteIdx);
+			addPictureList.get(i).setChIdx(chIdxList.get(i).getChIdx());
+		}
+		
+		for (InsertPicture picc : addPictureList) {
+			System.out.println("> " + picc.getImg());
+		}
+		
+		// picture insert
+		int temp2 = nService.insertAddPicture(addPictureList);
+		
+		
+		return "redirect:/note";
+	}
+	
+	
 }

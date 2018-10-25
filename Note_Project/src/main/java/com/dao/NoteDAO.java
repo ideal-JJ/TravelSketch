@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.dto.Chapter;
+import com.dto.ChapterIdx;
 import com.dto.FineLike;
+import com.dto.InsertNote;
+import com.dto.InsertPicture;
 import com.dto.Note;
 import com.dto.Reply;
 
@@ -50,4 +53,32 @@ public class NoteDAO {
 	public int deleteLike(HashMap<String, Integer> map) {
 		return template.delete("deleteLike", map);
 	}
+	
+	
+	
+	public int insertAddNote(InsertNote note) {
+		return template.insert("insertAddNote", note);
+	}
+	
+	public int maxNoteIdx() {
+		return template.selectOne("maxNoteIdx");
+	}
+	
+	public int insertAddChapter(ArrayList<Chapter> chapterList) {
+		return template.insert("insertAddChapter", chapterList);
+	}
+	
+	public List<ChapterIdx> ChapterCurrentAddIdxList(int noteIdx) {
+		return template.selectList("ChapterCurrentAddIdxList", noteIdx);
+	}
+	
+	public int insertAddPicture(ArrayList<InsertPicture> picList) {
+		return template.insert("insertAddPicture", picList);
+	}
+	
+	
+	
+	
+	
+	
 }

@@ -4,7 +4,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
-
 <head>
 	<meta charset="UTF-8">
 	<title>메인페이지입니당</title>
@@ -15,8 +14,6 @@
 </head>
 <body>
 	<jsp:include page="common/top.jsp" flush="true"/>
-	<jsp:include page="note/note.jsp" flush="true"/>	
+	<jsp:include page="admin/chart.jsp" flush="true"/>	
 </body>
-
 </html>
-

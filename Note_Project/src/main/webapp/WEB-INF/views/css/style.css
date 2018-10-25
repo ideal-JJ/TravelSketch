@@ -7,7 +7,7 @@ blockquote:before,blockquote:after,q:before,q:after{content:'';content:none;}
 table{border-collapse:collapse;border-spacing:0;}
 
 
-a{text-decoration:none;}
+a{text-decoration:none !important;}
 
 
 body{
@@ -20,5 +20,50 @@ body{
 }
 
 
+.chapterHeader {
+	padding : 10px;
+	color:#ffffff;
+	background-color : #18BC9C !important;
+}
 
+.chapterUl {
+	margin-bottom:20px;
+}
 
+.ml10 {
+	padding-left:10px;
+}
+.mt20 {
+	width:560px;
+	margin:20px auto 0;
+}
+.pp {
+	font-size:13px;
+	color:#666;
+}
+.ul_pic {
+	margin-top:15px;
+}
+
+#btnWarp {
+	overflow:hidden;
+	padding:10px 0;
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	
+}
+
+#btnWarp p {
+	float:left;
+	width:50%;
+	text-align:center;
+	
+}
+
+.likefloat {
+	float:left;
+}
+
+#btnWarp p a {
+	cursor : pointer;	
+}
